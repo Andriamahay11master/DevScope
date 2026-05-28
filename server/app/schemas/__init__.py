@@ -1,0 +1,1 @@
+# Data schema package for DevScope API
