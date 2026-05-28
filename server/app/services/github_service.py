@@ -8,6 +8,8 @@ from dotenv import load_dotenv
 import httpx
 from fastapi import HTTPException
 
+from .analytics_service import AnalyticsService
+
 load_dotenv()
 
 
@@ -66,9 +68,10 @@ class GitHubService:
         return resp.json()
 
     async def get_complete_profile(self, username: str) -> Dict[str, Any]:
-        """Return a combined object with `profile` and `repositories` for `username`.
+        """Return a combined object with `profile`, `repositories`, and `analytics` for `username`.
 
         Uses `get_profile` and `get_repositories` under the hood.
+        Computes analytics from repositories.
         """
         profile = await self.get_profile(username)
         repos_url = profile.get("repos_url")
@@ -76,4 +79,6 @@ class GitHubService:
         if repos_url:
             repositories = await self.get_repositories(repos_url=repos_url)
 
-        return {"profile": profile, "repositories": repositories}
+        analytics = AnalyticsService(repositories).compute()
+
+        return {"profile": profile, "repositories": repositories, "analytics": analytics}
