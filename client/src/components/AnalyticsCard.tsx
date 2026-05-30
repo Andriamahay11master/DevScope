@@ -10,10 +10,7 @@ const AnalyticsCard = ({ analytics }: AnalyticsCardProps) => {
   }
 
   const topLanguage = analytics.most_used_languages?.[0];
-  const mostLangagesUsed =
-    analytics.most_used_languages
-      ?.map((lang) => `${lang.language} (${lang.percentage}%)`)
-      .join(", ") ?? "—";
+  const usedLanguages = analytics.most_used_languages ?? [];
   const topRepo = analytics.most_starred_repositories?.[0];
 
   return (
@@ -50,7 +47,31 @@ const AnalyticsCard = ({ analytics }: AnalyticsCardProps) => {
           <p className="text-sm uppercase tracking-[0.18em] text-slate-500">
             Most Used Languages
           </p>
-          <p className="mt-2 text-sm text-slate-400">{mostLangagesUsed}</p>
+          {usedLanguages.length ? (
+            <div className="mt-3 space-y-3">
+              {usedLanguages.map((lang) => (
+                <div key={lang.language}>
+                  <div className="flex items-center justify-between text-sm text-slate-200">
+                    <span>{lang.language}</span>
+                    <span className="text-xs text-slate-400">
+                      {lang.percentage}%
+                    </span>
+                  </div>
+                  <div className="mt-1 h-2 overflow-hidden rounded-full bg-slate-800">
+                    <div
+                      className="h-full rounded-full bg-slate-400"
+                      style={{
+                        width: `${lang.percentage}%`,
+                        backgroundColor: `hsl(${Math.random() * 360}, 70%, 60%)`,
+                      }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="mt-2 text-sm text-slate-400">—</p>
+          )}
         </div>
 
         <div className="rounded-2xl border border-slate-800 bg-slate-950/70 p-4">
