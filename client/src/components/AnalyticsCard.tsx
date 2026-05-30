@@ -10,9 +10,10 @@ const AnalyticsCard = ({ analytics }: AnalyticsCardProps) => {
   }
 
   const topLanguage = analytics.most_used_languages?.[0];
-  const mostLangagesUsed = analytics.most_used_languages?.length
-    ? analytics.most_used_languages.map((lang) => lang.language).join(", ")
-    : "—";
+  const mostLangagesUsed =
+    analytics.most_used_languages
+      ?.map((lang) => `${lang.language} (${lang.percentage}%)`)
+      .join(", ") ?? "—";
   const topRepo = analytics.most_starred_repositories?.[0];
 
   return (
@@ -45,13 +46,11 @@ const AnalyticsCard = ({ analytics }: AnalyticsCardProps) => {
           ) : null}
         </div>
 
-        <div className="rounded-2xl border border-slate-800 bg-slate-950/70 p-4 text-center">
+        <div className="rounded-2xl border border-slate-800 bg-slate-950/70 p-4">
           <p className="text-sm uppercase tracking-[0.18em] text-slate-500">
             Most Used Languages
           </p>
-          <p className="mt-2 text-lg font-semibold text-white">
-            {mostLangagesUsed}
-          </p>
+          <p className="mt-2 text-sm text-slate-400">{mostLangagesUsed}</p>
         </div>
 
         <div className="rounded-2xl border border-slate-800 bg-slate-950/70 p-4">
