@@ -9,7 +9,6 @@ const AnalyticsCard = ({ analytics }: AnalyticsCardProps) => {
     return null;
   }
 
-  const topLanguage = analytics.most_used_languages?.[0];
   const usedLanguages = analytics.most_used_languages ?? [];
   const topRepo = analytics.most_starred_repositories?.[0];
 
@@ -25,22 +24,6 @@ const AnalyticsCard = ({ analytics }: AnalyticsCardProps) => {
           <p className="mt-2 text-2xl font-bold text-white">
             {analytics.total_stars}
           </p>
-        </div>
-
-        <div className="rounded-2xl border border-slate-800 bg-slate-950/70 p-4 text-center">
-          <p className="text-sm uppercase tracking-[0.18em] text-slate-500">
-            Top Language
-          </p>
-          <p className="mt-2 text-lg font-semibold text-white">
-            {topLanguage
-              ? `${topLanguage.language} (${topLanguage.count})`
-              : "—"}
-          </p>
-          {topLanguage ? (
-            <p className="mt-1 text-xs text-slate-400">
-              {topLanguage.percentage}% of repos
-            </p>
-          ) : null}
         </div>
 
         <div className="rounded-2xl border border-slate-800 bg-slate-950/70 p-4">
