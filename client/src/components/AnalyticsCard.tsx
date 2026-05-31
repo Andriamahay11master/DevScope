@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from "react";
 import type { GitHubAnalytics } from "../api/githubApi";
 
 interface AnalyticsCardProps {
@@ -11,6 +12,41 @@ const AnalyticsCard = ({ analytics }: AnalyticsCardProps) => {
 
   const usedLanguages = analytics.most_used_languages ?? [];
   const topRepo = analytics.most_starred_repositories?.[0];
+
+  const [animatedWidths, setAnimatedWidths] = useState<number[]>(
+    usedLanguages.map(() => 0),
+  );
+
+  // deterministic hue per language name
+  const hueFromString = (s: string) => {
+    let h = 0;
+    for (let i = 0; i < s.length; i++) {
+      h = (h * 31 + s.charCodeAt(i)) | 0;
+    }
+    return Math.abs(h) % 360;
+  };
+
+  useEffect(() => {
+    // reset to 0 then stagger-animate to target percentages
+    setAnimatedWidths(usedLanguages.map(() => 0));
+    const timers: number[] = [];
+
+    usedLanguages.forEach((lang, i) => {
+      const t = window.setTimeout(
+        () => {
+          setAnimatedWidths((prev) => {
+            const next = [...prev];
+            next[i] = lang.percentage;
+            return next;
+          });
+        },
+        120 * i + 80,
+      );
+      timers.push(t as unknown as number);
+    });
+
+    return () => timers.forEach((t) => clearTimeout(t));
+  }, [analytics?.most_used_languages]);
 
   return (
     <section className="w-full rounded-[24px] border border-slate-800 bg-slate-900/95 p-6 shadow-xl">
@@ -32,7 +68,7 @@ const AnalyticsCard = ({ analytics }: AnalyticsCardProps) => {
           </p>
           {usedLanguages.length ? (
             <div className="mt-3 space-y-3">
-              {usedLanguages.map((lang) => (
+              {usedLanguages.map((lang, idx) => (
                 <div key={lang.language}>
                   <div className="flex items-center justify-between text-sm text-slate-200">
                     <span>{lang.language}</span>
@@ -42,10 +78,11 @@ const AnalyticsCard = ({ analytics }: AnalyticsCardProps) => {
                   </div>
                   <div className="mt-1 h-2 overflow-hidden rounded-full bg-slate-800">
                     <div
-                      className="h-full rounded-full bg-slate-400"
+                      className="h-full rounded-full"
                       style={{
-                        width: `${lang.percentage}%`,
-                        backgroundColor: `hsl(${Math.random() * 360}, 70%, 60%)`,
+                        width: `${animatedWidths[idx] ?? 0}%`,
+                        backgroundColor: `hsl(${hueFromString(lang.language)}, 70%, 60%)`,
+                        transition: "width 600ms cubic-bezier(.2,.9,.2,1)",
                       }}
                     />
                   </div>
